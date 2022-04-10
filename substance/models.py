@@ -8,8 +8,17 @@ class Substance(Page):
 
 
     props = StreamField([
-        ('PDKp', blocks.PDKp())
-    ])
+        ('PDKp', blocks.PDKp()),
+        ('ODKp', blocks.ODKp()),
+        ('PDKw', blocks.PDKw()),
+        ('SclsSoil', blocks.SafetyClassSoil())
+    ], block_counts={
+            'PDKp': {'max_num': 1}, 
+            'PDKw': {'max_num': 1},
+            'ODKp': {'max_num': 1},
+            'SclsSoil': {'max_num': 1},       
+            },
+    )
 
 
     content_panels = Page.content_panels + [
