@@ -2,7 +2,8 @@
 from wagtail.core.models import Page
 from wagtail.core.fields import StreamField
 
-from streams import soilblocks, dwblocks, fwblocks, ecoblocks, airblocks, ldblocks
+from streams import soilblocks, dwblocks, fwblocks, \
+    ecoblocks, airblocks, ldblocks, propblocks, foodblocks
 
 from wagtail.admin.edit_handlers import StreamFieldPanel
 
@@ -76,11 +77,38 @@ class Substance(Page):
             'lc50water': {'max_num': 1},
     }, null=True, blank=True)
 
+    foodprops = StreamField([
+        ('pdkpp', foodblocks.PDKpp()),
+        ('mds', foodblocks.MDS()),
+        ('mdu', foodblocks.MDU()),
+        
+    ], block_counts={
+            'pdkpp': {'max_num': 1},
+            'mds': {'max_num': 1},
+            'mdu': {'max_num': 1},
+    }, null=True, blank=True)
+
+    props = StreamField([
+        ('Kow', propblocks.Kow()),
+        ('Solubility', propblocks.Solubility()),
+        ('COD', propblocks.COD()),
+        ('BOD5', propblocks.BOD5()),
+        ('Cnas', propblocks.Cnas()),        
+    ], block_counts={
+            'Kow': {'max_num': 1},
+            'Solubility': {'max_num': 1},
+            'COD': {'max_num': 1},
+            'BOD5': {'max_num': 1},
+            'Cnas': {'max_num': 1},
+    }, null=True, blank=True)
+
     content_panels = Page.content_panels + [
         StreamFieldPanel('soilprops', heading='Свойства для почвы'),
         StreamFieldPanel('dwprops', heading='Свойства для питьевой воды'),
         StreamFieldPanel('fwprops', heading='Свойства для воды рыбохозяйственного значения'),
         StreamFieldPanel('airprops', heading='Свойства для воздуха'),
         StreamFieldPanel('ldprops', heading='Летальные свойства'),
+        StreamFieldPanel('foodprops', heading='Содержание в продуктах'),
+        StreamFieldPanel('props', heading='Физические, химические и биологические свойства'),
         StreamFieldPanel('ecoprops', heading='Поведение в окружающей среде'),
     ]

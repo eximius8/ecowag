@@ -1,5 +1,3 @@
-from curses import panel
-from tabnanny import verbose
 from django.db import models
 from wagtail.snippets.models import register_snippet
 from wagtail.search import index
