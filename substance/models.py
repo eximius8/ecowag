@@ -2,20 +2,16 @@
 from wagtail.core.models import Page
 from wagtail.core.fields import StreamField
 
-from streams import soilblocks
-from streams import dwblocks
-from streams import fwblocks
-from streams import ecoblocks
-from streams import airblocks
+from streams import soilblocks, dwblocks, fwblocks, ecoblocks, airblocks, ldblocks
 
 from wagtail.admin.edit_handlers import StreamFieldPanel
 
 class Substance(Page):
 
     soilprops = StreamField([
+        ('SclsSoil', soilblocks.SafetyClassSoil()),
         ('PDKp', soilblocks.PDKp()),
         ('ODKp', soilblocks.ODKp()),        
-        ('SclsSoil', soilblocks.SafetyClassSoil()),        
     ], block_counts={
             'PDKp': {'max_num': 1}, 
             'ODKp': {'max_num': 1},
@@ -69,10 +65,22 @@ class Substance(Page):
             'bioaccum': {'max_num': 1},
     }, null=True, blank=True)
 
+    ldprops = StreamField([
+        ('ld50', ldblocks.LD50()),
+        ('lc50', ldblocks.LC50()),
+        ('lc50water', ldblocks.LC50water()),
+        
+    ], block_counts={
+            'ld50': {'max_num': 1},
+            'lc50': {'max_num': 1},
+            'lc50water': {'max_num': 1},
+    }, null=True, blank=True)
+
     content_panels = Page.content_panels + [
         StreamFieldPanel('soilprops', heading='Свойства для почвы'),
         StreamFieldPanel('dwprops', heading='Свойства для питьевой воды'),
         StreamFieldPanel('fwprops', heading='Свойства для воды рыбохозяйственного значения'),
         StreamFieldPanel('airprops', heading='Свойства для воздуха'),
+        StreamFieldPanel('ldprops', heading='Летальные свойства'),
         StreamFieldPanel('ecoprops', heading='Поведение в окружающей среде'),
     ]
