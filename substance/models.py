@@ -1,13 +1,45 @@
-#from django.db import models
+from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from wagtail.core.models import Page
 from wagtail.core.fields import StreamField
+from django.core.exceptions import ValidationError
 
 from streams import soilblocks, dwblocks, fwblocks, \
     ecoblocks, airblocks, ldblocks, propblocks, foodblocks
 
-from wagtail.admin.edit_handlers import StreamFieldPanel
+from wagtail.admin.edit_handlers import StreamFieldPanel, MultiFieldPanel, \
+    FieldPanel, FieldRowPanel
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
 class Substance(Page):
+
+    x_value = models.FloatField(
+        blank=True, 
+        null=True, 
+        verbose_name="X - относительный параметр опасности компонента отхода " +
+        "для окружающей среды (если известен - указание источника обязательно)",
+        validators=[MinValueValidator(1.0),MaxValueValidator(4.0)])
+
+    x_value_lit_source = models.ForeignKey('litsource.LitSource',
+                                    blank=True, 
+                                    null=True, 
+                                    on_delete=models.SET_NULL, 
+                                    related_name='x_value', 
+                                    verbose_name='Источник литературы для относительного параметра опаности (если задано числовое значение X, то обязателен)')
+                               
+    other_names = models.CharField(
+        max_length=1000,
+        blank=True, 
+        default="", 
+        verbose_name="Другие названия (через точку с запятой)")
+    cas_number = models.CharField(max_length=30,
+                                  verbose_name="Регистрационный номер CAS",
+                                  blank=True,
+                                  validators=[
+                                      RegexValidator(
+                                          regex=r"\b[1-9]{1}[0-9]{1,6}-\d{2}-\d\b",
+                                          message="CAS код для вещества в формате 1111-11-1"),
+                                        ])
 
     soilprops = StreamField([
         ('SclsSoil', soilblocks.SafetyClassSoil()),
@@ -102,7 +134,14 @@ class Substance(Page):
             'Cnas': {'max_num': 1},
     }, null=True, blank=True)
 
-    content_panels = Page.content_panels + [
+    content_panels = Page.content_panels + [  
+        FieldPanel('cas_number'),
+        FieldPanel('other_names', classname="full"), 
+        MultiFieldPanel([
+            FieldRowPanel(
+                [FieldPanel('x_value'),
+                 SnippetChooserPanel('x_value_lit_source')]),
+        ], heading="Известные параметр X"),
         StreamFieldPanel('soilprops', heading='Свойства для почвы'),
         StreamFieldPanel('dwprops', heading='Свойства для питьевой воды'),
         StreamFieldPanel('fwprops', heading='Свойства для воды рыбохозяйственного значения'),
@@ -112,3 +151,21 @@ class Substance(Page):
         StreamFieldPanel('props', heading='Физические, химические и биологические свойства'),
         StreamFieldPanel('ecoprops', heading='Поведение в окружающей среде'),
     ]
+
+    def get_x(self):
+        """
+        относительный параметр опасности компонента отхода для окружающей среды
+        """
+        if self.x_value:
+            return self.x_value
+    
+    def clean(self, *args, **kwargs):
+
+        if self.x_value and not self.x_value_lit_source:
+            raise ValidationError(
+                {'x_value_lit_source': ['Если задан X, необходимо задать источник',]})
+        elif self.x_value_lit_source and not self.x_value:
+            raise ValidationError(
+                {'x_value': ['Если задан источник, необходимо задать X',]})
+        return super().clean(*args, **kwargs)
+        
