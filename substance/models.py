@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from wagtail.core.models import Page
 from wagtail.core.fields import StreamField
+from wagtail.api import APIField
 from django.core.exceptions import ValidationError
 
 from streams import soilblocks, dwblocks, fwblocks, \
@@ -152,12 +153,19 @@ class Substance(Page):
         StreamFieldPanel('ecoprops', heading='Поведение в окружающей среде'),
     ]
 
+    api_fields = [
+        APIField('soilprops'),
+        APIField('get_x'),
+    ]
+
+    @property
     def get_x(self):
         """
         относительный параметр опасности компонента отхода для окружающей среды
         """
         if self.x_value:
             return self.x_value
+        return "0"
     
     def clean(self, *args, **kwargs):
 
