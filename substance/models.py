@@ -155,6 +155,13 @@ class Substance(Page):
 
     api_fields = [
         APIField('soilprops'),
+        APIField('dwprops'),
+        APIField('fwprops'),
+        APIField('airprops'),
+        APIField('ldprops'),
+        APIField('foodprops'),
+        APIField('props'),
+        APIField('ecoprops'),
         APIField('get_x'),
     ]
 

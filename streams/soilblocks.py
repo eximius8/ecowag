@@ -2,24 +2,11 @@ from wagtail.core.blocks import StructBlock, \
     ChoiceBlock, FloatBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
 from litsource.models import LitSource
-from wagtail.core.blocks import StructValue
-from litsource.serializers import LitSourceSerializer
+from .structvalues import ClassStructValue, PDKsoilStructValue, APIRepresentationMixin
 
 
-class PDKStructValue(StructValue):
-    
-    @property
-    def Bj(self):
-        value = self.get('value')
-        if value < 1:
-            return 1
-        if value <= 10:
-            return 2
-        if value <= 100:
-            return 3 
-        return 4
 
-class SafetyClassSoil(StructBlock):
+class SafetyClassSoil(APIRepresentationMixin, StructBlock):
     value = ChoiceBlock(
         label='Класс опасности в почве',
         choices=[
@@ -33,13 +20,16 @@ class SafetyClassSoil(StructBlock):
         LitSource,
         label="Источник литературы для значения", 
         required=True)
+    abbr = 'Класс опасности в почве'
+    long_name = 'Класс опасности в почве' 
 
     class Meta:
         icon = 'image'
         label = 'Класс опасности в почве'
+        value_class = ClassStructValue
 
 
-class PDKp(StructBlock):
+class PDKp(APIRepresentationMixin, StructBlock):
     value = FloatBlock(
         label='Предельно допустимая концентрация в почве (ПДКп) [мг/кг]',
         required=True, min_value=0)
@@ -47,24 +37,16 @@ class PDKp(StructBlock):
         LitSource,
         label="Источник литературы для значения", 
         required=True)
-    
-    def get_api_representation(self, value, context=None):
-      
-        if value:
-            return {
-                'B': value.Bj,
-                'value': value['value'],
-                'abbr': 'ПДКп (мг/кг)',
-                'name': 'Предельно допустимая концентрация вещества в почве',
-                'source': LitSourceSerializer(value['source']).data,
-            }
+    abbr = 'ПДК в почве (мг/кг)'
+    long_name = 'Предельно допустимая концентрация вещества в почве'    
+
 
     class Meta:
         icon = 'image'
         label = 'ПДК в почве'
-        value_class = PDKStructValue
+        value_class = PDKsoilStructValue
 
-class ODKp(StructBlock):
+class ODKp(APIRepresentationMixin, StructBlock):
     value = FloatBlock(
         label='Ориентировочно допустимые концентрации в почве (ОДК) [мг/кг]',
         required=True, min_value=0)
@@ -76,4 +58,4 @@ class ODKp(StructBlock):
     class Meta:
         icon = 'image'
         label = 'ОДК в почве'
-        value_class = PDKStructValue
+        value_class = PDKsoilStructValue
