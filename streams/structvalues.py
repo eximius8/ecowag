@@ -49,3 +49,50 @@ class PDKairStructValue(StructValue):
     def Bj(self):
         value = self.get('value')
         return get_b(value, 0.01, 0.1, 1)
+
+class PDKdwStructValue(StructValue):
+    
+    @property
+    def Bj(self):
+        value = self.get('value')
+        return get_b(value, 0.01, 0.1, 1)
+
+
+class PDKfwStructValue(StructValue):
+    
+    @property
+    def Bj(self):
+        value = self.get('value')
+        return get_b(value, 0.001, 0.01, 0.1)
+
+
+class PDKppStructValue(StructValue):
+    
+    @property
+    def Bj(self):
+        value = self.get('value')
+        return get_b(value, 0.01, 1., 10.)
+
+
+class LD50StructValue(StructValue):
+    
+    @property
+    def Bj(self):
+        value = self.get('value')
+        return get_b(value, 15., 150., 5000.)
+
+
+class LC50StructValue(StructValue):
+    
+    @property
+    def Bj(self):
+        value = self.get('value')
+        return get_b(value, 500., 5000., 50000.)
+
+
+class LC50wStructValue(StructValue):
+    
+    @property
+    def Bj(self):
+        value = self.get('value')
+        return get_b(value, 1., 5., 100.)

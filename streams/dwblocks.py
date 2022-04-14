@@ -2,7 +2,7 @@ from wagtail.core.blocks import StructBlock, \
     ChoiceBlock, FloatBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
 from litsource.models import LitSource
-from .structvalues import ClassStructValue, APIRepresentationMixin
+from .structvalues import ClassStructValue, APIRepresentationMixin, PDKdwStructValue
 
 
 class SafetyClassDrinkWater(APIRepresentationMixin, StructBlock):
@@ -37,10 +37,15 @@ class PDKw(APIRepresentationMixin, StructBlock):
         LitSource,
         label="Источник литературы для значения", 
         required=True)
+    abbr = 'ПДКВ (мг/л)'
+    long_name = 'Предельно допустимая концентрация вещества ' + \
+        'в воде водных объектов, используемых для целей питьевого '+ \
+        'и хозяйственнобытового водоснабжения'
 
     class Meta:
         icon = 'cup'
         label = 'ПДК в питьевой воде'
+        value_class = PDKdwStructValue
 
 
 class ODUw(APIRepresentationMixin, StructBlock):
@@ -51,10 +56,15 @@ class ODUw(APIRepresentationMixin, StructBlock):
         LitSource,
         label="Источник литературы для значения", 
         required=True)
+    abbr = 'ОДУ (мг/л)'
+    long_name = 'Ориентировочно допустимый уровень концентрации вещества ' + \
+        'в воде водных объектов, используемых для целей питьевого '+ \
+        'и хозяйственнобытового водоснабжения'
 
     class Meta:
         icon = 'cup'
         label = 'ОДУ в питьевой воде'
+        value_class = PDKdwStructValue
 
 
 class OBUVw(APIRepresentationMixin, StructBlock):
@@ -65,7 +75,12 @@ class OBUVw(APIRepresentationMixin, StructBlock):
         LitSource,
         label="Источник литературы для значения", 
         required=True)
+    abbr = 'ОБУВ (мг/л)'
+    long_name = 'Ориентировочный безопасный уровень воздействия концентрации вещества ' + \
+        'в воде водных объектов, используемых для целей питьевого '+ \
+        'и хозяйственнобытового водоснабжения'
 
     class Meta:
         icon = 'cup'
         label = 'ОБУВ в питьевой воде'
+        value_class = PDKdwStructValue
