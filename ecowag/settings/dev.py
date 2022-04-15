@@ -1,3 +1,5 @@
+DJANGO_ALLOW_AYNSC_UNSAFE = True
+DJANGO_ALLOW_ASYNC_UNSAFE = True
 from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -16,3 +18,6 @@ try:
     from .local import *
 except ImportError:
     pass
+
+INSTALLED_APPS += ['django_extensions']
+
