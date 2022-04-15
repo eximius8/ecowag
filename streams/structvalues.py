@@ -1,5 +1,27 @@
 from wagtail.core.blocks import StructValue
 from litsource.serializers import LitSourceSerializer
+from wagtail.core.blocks import StructBlock
+from wagtail.snippets.blocks import SnippetChooserBlock
+from litsource.models import LitSource
+
+
+class SourceStructBlock(StructBlock):
+    source = SnippetChooserBlock(
+        LitSource,
+        label="Источник литературы для значения", 
+        required=True)
+    
+    def get_api_representation(self, value, context=None):
+
+        api_json = {}
+        if value:
+            if 'Bj' in dir(value):
+                api_json['B'] = value.Bj
+            api_json['value'] = value['value']
+            api_json['abbr'] = self.abbr
+            api_json['name'] = self.long_name
+            api_json['source'] = LitSourceSerializer(value['source']).data
+            return api_json
 
 
 class ClassStructValue(StructValue):

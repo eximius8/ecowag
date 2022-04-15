@@ -1,12 +1,8 @@
-from wagtail.core.blocks import StructBlock, \
-    ChoiceBlock, FloatBlock
-from wagtail.snippets.blocks import SnippetChooserBlock
-from litsource.models import LitSource
-from .structvalues import ClassStructValue, PDKsoilStructValue, APIRepresentationMixin
+from wagtail.core.blocks import ChoiceBlock, FloatBlock
+from streams.structvalues import SourceStructBlock, ClassStructValue, PDKsoilStructValue
 
 
-
-class SafetyClassSoil(APIRepresentationMixin, StructBlock):
+class SafetyClassSoil(SourceStructBlock):
     value = ChoiceBlock(
         label='Класс опасности в почве',
         choices=[
@@ -16,10 +12,6 @@ class SafetyClassSoil(APIRepresentationMixin, StructBlock):
                 ('4', 'не установлен'),
             ],
         required=True,)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'Класс опасности в почве'
     long_name = 'Класс опасности в почве' 
 
@@ -29,31 +21,25 @@ class SafetyClassSoil(APIRepresentationMixin, StructBlock):
         value_class = ClassStructValue
 
 
-class PDKp(APIRepresentationMixin, StructBlock):
+class PDKp(SourceStructBlock):
     value = FloatBlock(
         label='Предельно допустимая концентрация в почве (ПДКп) [мг/кг]',
         required=True, min_value=0)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'ПДК в почве (мг/кг)'
-    long_name = 'Предельно допустимая концентрация вещества в почве'    
-
+    long_name = 'Предельно допустимая концентрация вещества в почве'
 
     class Meta:
         icon = 'image'
         label = 'ПДК в почве'
         value_class = PDKsoilStructValue
 
-class ODKp(APIRepresentationMixin, StructBlock):
+
+class ODKp(SourceStructBlock):
     value = FloatBlock(
         label='Ориентировочно допустимые концентрации в почве (ОДК) [мг/кг]',
         required=True, min_value=0)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
+    abbr = 'ОДК в почве (мг/кг)'
+    long_name = 'Ориентировочно допустимая концентрация вещества в почве'
 
     class Meta:
         icon = 'image'

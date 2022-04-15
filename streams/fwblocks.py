@@ -1,11 +1,8 @@
-from wagtail.core.blocks import StructBlock, \
-    FloatBlock, ChoiceBlock
-from wagtail.snippets.blocks import SnippetChooserBlock
-from litsource.models import LitSource
-from .structvalues import ClassStructValue, APIRepresentationMixin, PDKfwStructValue
+from wagtail.core.blocks import FloatBlock, ChoiceBlock
+from streams.structvalues import SourceStructBlock, ClassStructValue, PDKfwStructValue
 
 
-class SafetyClassFishWater(APIRepresentationMixin, StructBlock):
+class SafetyClassFishWater(SourceStructBlock):
     value = ChoiceBlock(
         label='Класс опасности в воде рыбохозяйственного значения',
         choices=[
@@ -15,10 +12,6 @@ class SafetyClassFishWater(APIRepresentationMixin, StructBlock):
                 ('4', 'IV класс'),
             ],
         required=True,)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'Класс опасности в воде водных объектов рыбохозяйственного значения'
     long_name = 'Класс опасности в воде водных объектов рыбохозяйственного значения'
 
@@ -28,18 +21,13 @@ class SafetyClassFishWater(APIRepresentationMixin, StructBlock):
         value_class = ClassStructValue
 
 
-class PDKfw(APIRepresentationMixin, StructBlock):
+class PDKfw(SourceStructBlock):
     value = FloatBlock(
         label='Предельно допустимая концентрация в воде рыбохозяйственного значения (ПДКрх) [мг/л]',
         required=True, min_value=0)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'ПДКр.х. (мг/л)'
     long_name = 'Предельно допустимая концентрация вещества в воде водных '+ \
         'объектов рыбохозяйственного значения'
-
 
     class Meta:
         icon = 'cup'
@@ -47,14 +35,10 @@ class PDKfw(APIRepresentationMixin, StructBlock):
         value_class = PDKfwStructValue
 
 
-class OBUVfw(APIRepresentationMixin, StructBlock):
+class OBUVfw(SourceStructBlock):
     value = FloatBlock(
         label='Ориентировочно безопасные уровни воздействия в воде рыбохозяйственного значения (ОБУВ) [мг/л]',
         required=True, min_value=0)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'ОБУВр.х. (мг/л)'
     long_name = 'Ориентировочный безопасный уровень воздействия ' +\
         'концентрация вещества в воде водных объектов рыбохозяйственного значения'
