@@ -1,3 +1,4 @@
+import math
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from wagtail.core.models import Page
@@ -11,6 +12,8 @@ from streams import soilblocks, dwblocks, fwblocks, \
 from wagtail.admin.edit_handlers import StreamFieldPanel, MultiFieldPanel, \
     FieldPanel, FieldRowPanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from streams.structvalues import get_b, get_rev_b
+
 
 class Substance(Page):
 
@@ -164,21 +167,41 @@ class Substance(Page):
         APIField('ecoprops'),
         APIField('get_x'),
         APIField('get_prop_count'),
+        APIField('b_inf'),        
     ]
 
     single_props = ['SafetyClassSoil', 'LD50', 'LC50', 'LC50water', 'SafetyClassFishWater', 
         'Persistancy', 'Bioaccum', 'SafetyClassDrinkWater', 'SafetyClassAir', 'Kow']
+    
+    def get_set_props(self):
+
+        props_as_list = list(self.soilprops) + list(self.dwprops) + list(self.fwprops) + \
+            list(self.airprops) + list(self.ldprops) + list(self.foodprops) + \
+            list(self.props) + list(self.ecoprops)
+        return [a.block_type for a in props_as_list]
+    
+    def get_streams_as_dict(self):
+        '''
+        Возвращает все свойства как словарь
+        '''
+        streamflds = [
+            self.soilprops, self.dwprops, self.fwprops, self.airprops,
+            self.ldprops, self.foodprops, self.props, self.ecoprops
+        ]
+        stream_dict = {}
+        for streamf in streamflds:
+            for prop in streamf:
+                stream_dict[prop.block_type] = prop.value["value"]
+        return stream_dict
+
 
     def get_prop_count(self):
         """
         Число свойств, учитываемых в расчете 
         """
-        count = 0
-        props_as_list = list(self.soilprops) + list(self.dwprops) + list(self.fwprops) + \
-            list(self.airprops) + list(self.ldprops) + list(self.foodprops) + \
-            list(self.props) + list(self.ecoprops)
-        all_blocks = [a.block_type for a in props_as_list]
-        
+        count = 0        
+        all_blocks = self.get_set_props()
+    
         for prop in self.single_props:
             if prop in all_blocks:
                 count += 1
@@ -203,29 +226,42 @@ class Substance(Page):
         return count
     
     def complexBj(self, selfitems, props_in_order):
-        
-        for prop in selfitems:
-            
-     
+        '''
+        Функция возвращает В для свойства.
+        props_in_order - свойства в порядке убывания важности
+        selfitems - streamfield
+        '''
+        all_blocks = [a.block_type for a in selfitems]
+        for prop in props_in_order:
+            if prop in list(all_blocks):
+                for block in selfitems:
+                    if block.block_type == prop:
+                        return block.value.Bj
         return 0
     
     @property
     def b_inf(self):
         prop_count = self.get_prop_count()
         if prop_count < 6:
-            return 1
+            return 1.
         elif prop_count < 9:
-            return 2
+            return 2.
         elif prop_count < 11:
-            return 3
-        return 4
+            return 3.
+        return 4.
+    
+    def get_sum_complexBj(self):
 
-    def get_x(self):
-        """
-        относительный параметр опасности компонента отхода для окружающей среды
-        """
-        if self.x_value:
-            return self.x_value
+        sumbj = 0
+        sumbj += self.complexBj(self.soilprops, ['PDKp', 'ODKp'])
+        sumbj += self.complexBj(self.dwprops, ['PDKw', 'ODUw', 'OBUVw'])
+        sumbj += self.complexBj(self.fwprops, ['PDKfw', 'OBUVfw'])
+        sumbj += self.complexBj(self.airprops, ['PDKss', 'PDKmr', 'OBUVair'])
+        sumbj += self.complexBj(self.foodprops, ['PDKpp', 'MDS', 'MDU'])
+        return sumbj
+    
+    def get_sum_singleBj(self):
+
         sumbj = 0
         props_as_list = list(self.soilprops) + list(self.dwprops) + list(self.fwprops) + \
             list(self.airprops) + list(self.ldprops) + list(self.foodprops) + \
@@ -234,8 +270,49 @@ class Substance(Page):
         for prop in all_blocks:
             if prop.block_type in self.single_props:
                 sumbj += prop.value.Bj
-        if 
+        
         return sumbj
+    
+    def get_sum_multiBj(self):
+        
+        sumbj = 0        
+        prop_dict = self.get_streams_as_dict()
+        if all(x in prop_dict for x in ['BOD5', 'COD']):
+            bd = prop_dict['BOD5'] / prop_dict['COD'] * 100
+            sumbj += get_b(bd, 0.1, 1., 10.)
+        if all(x in prop_dict for x in ['Solubility', 'PDKw']):
+            lgspdk = math.log10(prop_dict['Solubility'] / prop_dict['PDKw'])
+            sumbj += get_rev_b(lgspdk, 5., 2., 1.)
+        if all(x in prop_dict for x in ['Cnas', 'PDKrz']):
+            lgcpdk = math.log10(prop_dict['Cnas'] / prop_dict['PDKrz'])
+            sumbj += get_rev_b(lgcpdk, 5., 2., 1.)
+        if 'Cnas' in prop_dict and any(x in prop_dict for x in ['PDKss', 'PDKmr']):
+            if 'PDKss' in prop_dict:
+                pdk = prop_dict['PDKss']
+            else:
+                pdk = prop_dict['PDKmr']
+            lgcpdkss = math.log10(prop_dict['Cnas'] / pdk)
+            sumbj += get_rev_b(lgcpdkss, 7., 3.9, 1.6)
+
+        return sumbj
+
+    
+    def get_sumBj(self):
+
+        return self.get_sum_complexBj() + self.get_sum_singleBj() + self.get_sum_multiBj()
+        
+
+
+    def get_x(self):
+        """
+        относительный параметр опасности компонента отхода для окружающей среды
+        """
+        if self.x_value:
+            return self.x_value
+        
+        return (self.get_sumBj() + self.b_inf) / (self.get_prop_count() + 1)
+        
+                
 
     
     def get_z(self):
