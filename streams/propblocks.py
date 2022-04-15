@@ -1,5 +1,7 @@
 from wagtail.core.blocks import FloatBlock
 from streams.structvalues import SourceStructBlock
+from wagtail.core.blocks import StructValue
+import math
 
 
 class Solubility(SourceStructBlock):
@@ -26,6 +28,21 @@ class Cnas(SourceStructBlock):
         label = 'Насыщающая концентрация вещества'
 
 
+class KowStructValue(StructValue):
+    
+    @property
+    def Bj(self):
+        value = self.get('value')
+        logkw = math.log10(value)
+        if logkw > 4:
+            return 1
+        elif logkw >= 2:
+            return 2
+        elif logkw >= 0:
+            return 3
+        return 4
+
+
 class Kow(SourceStructBlock):
     value = FloatBlock(
         label='Коэффициент распределения в системе октанол/вода при 20° C',
@@ -36,6 +53,7 @@ class Kow(SourceStructBlock):
     class Meta:
         icon = 'cup'
         label = 'Коэффициент распределения Kow'
+        value_class = KowStructValue
 
 
 class BOD5(SourceStructBlock):

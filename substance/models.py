@@ -166,6 +166,9 @@ class Substance(Page):
         APIField('get_prop_count'),
     ]
 
+    single_props = ['SafetyClassSoil', 'LD50', 'LC50', 'LC50water', 'SafetyClassFishWater', 
+        'Persistancy', 'Bioaccum', 'SafetyClassDrinkWater', 'SafetyClassAir', 'Kow']
+
     def get_prop_count(self):
         """
         Число свойств, учитываемых в расчете 
@@ -175,9 +178,8 @@ class Substance(Page):
             list(self.airprops) + list(self.ldprops) + list(self.foodprops) + \
             list(self.props) + list(self.ecoprops)
         all_blocks = [a.block_type for a in props_as_list]
-        single_props = ['SafetyClassSoil', 'LD50', 'LC50', 'LC50water', 'SafetyClassFishWater', 
-        'Persistancy', 'Bioaccum', 'SafetyClassDrinkWater', 'SafetyClassAir', 'Kow']
-        for prop in single_props:
+        
+        for prop in self.single_props:
             if prop in all_blocks:
                 count += 1
         if any(x in all_blocks for x in ['PDKp', 'ODKp']):
@@ -198,17 +200,88 @@ class Substance(Page):
             count += 1
         if 'Cnas' in all_blocks and any(x in all_blocks for x in ['PDKss', 'PDKmr']):
             count += 1
-        return count            
-
-
+        return count
+    
+    def complexBj(self, selfitems, props_in_order):
+        
+        for prop in selfitems:
+            
+     
+        return 0
+    
     @property
+    def b_inf(self):
+        prop_count = self.get_prop_count()
+        if prop_count < 6:
+            return 1
+        elif prop_count < 9:
+            return 2
+        elif prop_count < 11:
+            return 3
+        return 4
+
     def get_x(self):
         """
         относительный параметр опасности компонента отхода для окружающей среды
         """
         if self.x_value:
             return self.x_value
-        return "1"
+        sumbj = 0
+        props_as_list = list(self.soilprops) + list(self.dwprops) + list(self.fwprops) + \
+            list(self.airprops) + list(self.ldprops) + list(self.foodprops) + \
+            list(self.props) + list(self.ecoprops)
+        all_blocks = [a for a in props_as_list]
+        for prop in all_blocks:
+            if prop.block_type in self.single_props:
+                sumbj += prop.value.Bj
+        if 
+        return sumbj
+
+    
+    def get_z(self):
+        """
+        унифицированный относительный параметр опасности компонента отхода для окружающей среды
+        """        
+        return 4./3.*self.get_x()-1./3.
+    
+    def get_log_w(self):
+        """
+        Функция считает логарифм от коэффициента степени опасности компонента
+        уточнить логарифм десятичный или какой-то другой
+        """        
+
+        z = self.get_z()
+        if 1. <= z <= 2:
+            return 4. - 4. / z
+        elif 2. < z <= 4:
+            return z
+        elif 4. < z <= 5:
+            return 2. + 4. / (6 - z)
+
+        return 1
+    
+    def get_w(self):
+        """
+        Функция считает коэффициента степени опасности компонента       
+        если значение w задано в базе возвращает значение из базы
+        """           
+
+        return 10.**self.get_log_w()
+    
+  
+    def get_k(self, conc):
+        """
+        Показатель опасности компонента отхода 
+        conc - концентрация в мг/кг
+        если для компонента задана фоновая концентрация в почве и значение conc меньше нее
+        принимает W=1e6
+        в противном случае считает W согласно методике по свойства
+        """
+        if self.land_concentration:
+            if conc > self.land_concentration:
+                return conc / self.get_w()
+            return conc/1e6
+        return conc / self.get_w()
     
     def clean(self, *args, **kwargs):
 
