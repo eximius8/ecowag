@@ -43,82 +43,82 @@ class Substance(Page):
                                         ])
 
     soilprops = StreamField([
-        ('SclsSoil', soilblocks.SafetyClassSoil()),
+        ('SafetyClassSoil', soilblocks.SafetyClassSoil()),
         ('PDKp', soilblocks.PDKp()),
         ('ODKp', soilblocks.ODKp()),        
     ], block_counts={
-            'PDKp': {'max_num': 1}, 
+            'SafetyClassSoil': {'max_num': 1}, 
+            'PDKp': {'max_num': 1},
             'ODKp': {'max_num': 1},
-            'SclsSoil': {'max_num': 1},
     }, null=True, blank=True)
 
     dwprops = StreamField([
-        ('SclsDWater', dwblocks.SafetyClassDrinkWater()),
+        ('SafetyClassDrinkWater', dwblocks.SafetyClassDrinkWater()),
         ('PDKw', dwblocks.PDKw()),        
-        ('oduw', dwblocks.ODUw()),
-        ('obuvw', dwblocks.OBUVw()),
+        ('ODUw', dwblocks.ODUw()),
+        ('OBUVw', dwblocks.OBUVw()),
         
     ], block_counts={
-            'SclsDWater': {'max_num': 1}, 
+            'SafetyClassDrinkWater': {'max_num': 1}, 
             'PDKw': {'max_num': 1},
-            'oduw': {'max_num': 1},
-            'obuvw': {'max_num': 1},
+            'ODUw': {'max_num': 1},
+            'OBUVw': {'max_num': 1},
     }, null=True, blank=True)
 
     fwprops = StreamField([
-        ('SclsFWater', fwblocks.SafetyClassFishWater()),
+        ('SafetyClassFishWater', fwblocks.SafetyClassFishWater()),
         ('PDKfw', fwblocks.PDKfw()),        
-        ('obuvfw', fwblocks.OBUVfw()),
+        ('OBUVfw', fwblocks.OBUVfw()),
         
     ], block_counts={
-            'SclsFWater': {'max_num': 1}, 
+            'SafetyClassFishWater': {'max_num': 1}, 
             'PDKfw': {'max_num': 1},
-            'obuvfw': {'max_num': 1},
+            'OBUVfw': {'max_num': 1},
     }, null=True, blank=True)
 
     airprops = StreamField([
-        ('SclsAir', airblocks.SafetyClassAir()),
+        ('SafetyClassAir', airblocks.SafetyClassAir()),
         ('PDKss', airblocks.PDKss()),        
         ('PDKmr', airblocks.PDKmr()),
         ('PDKrz', airblocks.PDKrz()),
-        ('obuvair', airblocks.OBUVair()),        
+        ('OBUVair', airblocks.OBUVair()),        
     ], block_counts={
-            'SclsAir': {'max_num': 1}, 
+            'SafetyClassAir': {'max_num': 1}, 
             'PDKss': {'max_num': 1},
             'PDKmr': {'max_num': 1},
             'PDKrz': {'max_num': 1},
-            'obuvair': {'max_num': 1},
+            'OBUVair': {'max_num': 1},
     }, null=True, blank=True)
 
     ecoprops = StreamField([
-        ('presistancy', ecoblocks.Persistancy()),
-        ('bioaccum', ecoblocks.Bioaccum()),
+        ('Persistancy', ecoblocks.Persistancy()),
+        ('Bioaccum', ecoblocks.Bioaccum()),
         
     ], block_counts={
-            'presistancy': {'max_num': 1},
-            'bioaccum': {'max_num': 1},
+            'Persistancy': {'max_num': 1},
+            'Bioaccum': {'max_num': 1},
     }, null=True, blank=True)
 
     ldprops = StreamField([
-        ('ld50', ldblocks.LD50()),
-        ('lc50', ldblocks.LC50()),
-        ('lc50water', ldblocks.LC50water()),
+        ('LD50', ldblocks.LD50()),
+        ('LC50', ldblocks.LC50()),
+        ('LC50water', ldblocks.LC50water()),
         
     ], block_counts={
-            'ld50': {'max_num': 1},
-            'lc50': {'max_num': 1},
-            'lc50water': {'max_num': 1},
+            'LD50': {'max_num': 1},
+            'LC50': {'max_num': 1},
+            'LC50water': {'max_num': 1},
     }, null=True, blank=True)
 
     foodprops = StreamField([
-        ('pdkpp', foodblocks.PDKpp()),
-        ('mds', foodblocks.MDS()),
-        ('mdu', foodblocks.MDU()),
+        ('PDKpp', foodblocks.PDKpp()),
+        ('MDS', foodblocks.MDS()),
+        ('MDU', foodblocks.MDU()),
         
     ], block_counts={
-            'pdkpp': {'max_num': 1},
-            'mds': {'max_num': 1},
-            'mdu': {'max_num': 1},
+            'PDKpp': {'max_num': 1},
+            'MDS': {'max_num': 1},
+            'MDU': {'max_num': 1},
     }, null=True, blank=True)
 
     props = StreamField([
@@ -163,7 +163,43 @@ class Substance(Page):
         APIField('props'),
         APIField('ecoprops'),
         APIField('get_x'),
+        APIField('get_prop_count'),
     ]
+
+    def get_prop_count(self):
+        """
+        Число свойств, учитываемых в расчете 
+        """
+        count = 0
+        props_as_list = list(self.soilprops) + list(self.dwprops) + list(self.fwprops) + \
+            list(self.airprops) + list(self.ldprops) + list(self.foodprops) + \
+            list(self.props) + list(self.ecoprops)
+        all_blocks = [a.block_type for a in props_as_list]
+        single_props = ['SafetyClassSoil', 'LD50', 'LC50', 'LC50water', 'SafetyClassFishWater', 
+        'Persistancy', 'Bioaccum', 'SafetyClassDrinkWater', 'SafetyClassAir', 'Kow']
+        for prop in single_props:
+            if prop in all_blocks:
+                count += 1
+        if any(x in all_blocks for x in ['PDKp', 'ODKp']):
+            count += 1
+        if any(x in all_blocks for x in ['PDKw', 'ODUw', 'OBUVw']):
+            count += 1
+        if any(x in all_blocks for x in ['PDKfw', 'OBUVfw']):
+            count += 1
+        if any(x in all_blocks for x in ['PDKss', 'PDKmr', 'OBUVair']):
+            count += 1
+        if any(x in all_blocks for x in ['PDKpp', 'MDS', 'MDU']):
+            count += 1
+        if all(x in all_blocks for x in ['BOD5', 'COD']):
+            count += 1
+        if all(x in all_blocks for x in ['Solubility', 'PDKw']):        
+            count += 1
+        if all(x in all_blocks for x in ['Cnas', 'PDKrz']):        
+            count += 1
+        if 'Cnas' in all_blocks and any(x in all_blocks for x in ['PDKss', 'PDKmr']):
+            count += 1
+        return count            
+
 
     @property
     def get_x(self):
@@ -172,7 +208,7 @@ class Substance(Page):
         """
         if self.x_value:
             return self.x_value
-        return "0"
+        return "1"
     
     def clean(self, *args, **kwargs):
 
