@@ -1,11 +1,8 @@
-from wagtail.core.blocks import StructBlock, \
-    ChoiceBlock
-from wagtail.snippets.blocks import SnippetChooserBlock
-from litsource.models import LitSource
-from .structvalues import ClassStructValue, APIRepresentationMixin
+from wagtail.core.blocks import ChoiceBlock
+from .structvalues import ClassStructValue, SourceStructBlock
 
 
-class Persistancy(APIRepresentationMixin, StructBlock):
+class Persistancy(SourceStructBlock):
     value = ChoiceBlock(
         label='Персистентность',
         choices=[
@@ -15,10 +12,6 @@ class Persistancy(APIRepresentationMixin, StructBlock):
                 ('4', 'Образование менее токсичных продуктов'),
             ],
         required=True,)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'Персистентность'
     long_name = 'Персистентность (трансформация в окружающей среде)'
 
@@ -28,7 +21,7 @@ class Persistancy(APIRepresentationMixin, StructBlock):
         value_class = ClassStructValue
 
 
-class Bioaccum(APIRepresentationMixin, StructBlock):
+class Bioaccum(SourceStructBlock):
     value = ChoiceBlock(
         label='Биоаккумуляция',
         choices=[
@@ -38,10 +31,6 @@ class Bioaccum(APIRepresentationMixin, StructBlock):
                 ('4', 'Накопление отсутствует'),
             ],
         required=True,)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'Биоаккумуляция'
     long_name = 'Биоаккумуляция (поведение в пищевой цепочке)'
 

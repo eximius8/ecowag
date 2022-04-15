@@ -1,11 +1,8 @@
-from wagtail.core.blocks import StructBlock, \
-    ChoiceBlock, FloatBlock
-from wagtail.snippets.blocks import SnippetChooserBlock
-from litsource.models import LitSource
-from .structvalues import ClassStructValue, APIRepresentationMixin, PDKdwStructValue
+from wagtail.core.blocks import ChoiceBlock, FloatBlock
+from .structvalues import SourceStructBlock, ClassStructValue, PDKdwStructValue
 
 
-class SafetyClassDrinkWater(APIRepresentationMixin, StructBlock):
+class SafetyClassDrinkWater(SourceStructBlock):
     value = ChoiceBlock(
         label='Класс опасности в питьевой воде',
         choices=[
@@ -15,10 +12,6 @@ class SafetyClassDrinkWater(APIRepresentationMixin, StructBlock):
                 ('4', 'IV класс'),
             ],
         required=True,)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'Класс опасности в питьевой воде'
     long_name = 'Класс опасности в воде водных объектов, используемых для' + \
         'целей питьевого и хозяйственнобытового водоснабжения'
@@ -29,14 +22,10 @@ class SafetyClassDrinkWater(APIRepresentationMixin, StructBlock):
         value_class = ClassStructValue
 
 
-class PDKw(APIRepresentationMixin, StructBlock):
+class PDKw(SourceStructBlock):
     value = FloatBlock(
         label='Предельно допустимая концентрация в питьевой воде (ПДКв) [мг/л]',
         required=True, min_value=0)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'ПДКВ (мг/л)'
     long_name = 'Предельно допустимая концентрация вещества ' + \
         'в воде водных объектов, используемых для целей питьевого '+ \
@@ -48,14 +37,10 @@ class PDKw(APIRepresentationMixin, StructBlock):
         value_class = PDKdwStructValue
 
 
-class ODUw(APIRepresentationMixin, StructBlock):
+class ODUw(SourceStructBlock):
     value = FloatBlock(
         label='Ориентировочные допустимые уровни в питьевой воде (ОДУ) [мг/л]',
         required=True, min_value=0)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'ОДУ (мг/л)'
     long_name = 'Ориентировочно допустимый уровень концентрации вещества ' + \
         'в воде водных объектов, используемых для целей питьевого '+ \
@@ -67,14 +52,10 @@ class ODUw(APIRepresentationMixin, StructBlock):
         value_class = PDKdwStructValue
 
 
-class OBUVw(APIRepresentationMixin, StructBlock):
+class OBUVw(SourceStructBlock):
     value = FloatBlock(
         label='Ориентировочно безопасные уровни воздействия в питьевой воде (ОБУВ) [мг/л]',
         required=True, min_value=0)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'ОБУВ (мг/л)'
     long_name = 'Ориентировочный безопасный уровень воздействия концентрации вещества ' + \
         'в воде водных объектов, используемых для целей питьевого '+ \

@@ -1,18 +1,11 @@
-from wagtail.core.blocks import StructBlock, \
-    FloatBlock, ChoiceBlock
-from wagtail.snippets.blocks import SnippetChooserBlock
-from litsource.models import LitSource
-from .structvalues import ClassStructValue, PDKairStructValue, APIRepresentationMixin
+from wagtail.core.blocks import FloatBlock, ChoiceBlock
+from .structvalues import ClassStructValue, PDKairStructValue, SourceStructBlock
 
 
-class PDKss(APIRepresentationMixin, StructBlock):
+class PDKss(SourceStructBlock):
     value = FloatBlock(
         label='Предельно допустимая концентрация в воздухе средне-суточное зоны (ПДКсс) [мг/м3]',
         required=True, min_value=0)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'ПДКс.с. (мг/м3)'
     long_name = 'Предельно допустимая концентрация вещества среднесуточная в атмосферном воздухе населенных мест' 
 
@@ -22,14 +15,10 @@ class PDKss(APIRepresentationMixin, StructBlock):
         value_class = PDKairStructValue
 
 
-class PDKmr(APIRepresentationMixin, StructBlock):
+class PDKmr(SourceStructBlock):
     value = FloatBlock(
         label='Предельно допустимая концентрация в воздухе максимальная разовая (ПДКмр) [мг/м3]',
         required=True, min_value=0)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'ПДКм.р. (мг/м3)'
     long_name = 'Предельно допустимая концентрация вещества максимально разовая в атмосферном воздухе населенных мест'
 
@@ -39,14 +28,10 @@ class PDKmr(APIRepresentationMixin, StructBlock):
         value_class = PDKairStructValue
 
 
-class PDKrz(APIRepresentationMixin, StructBlock):
+class PDKrz(SourceStructBlock):
     value = FloatBlock(
         label='Предельно допустимая концентрация в воздухе рабочей зоны (ПДКрз) [мг/м3]',
         required=True, min_value=0)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'ПДКр.з. (мг/м3)'
     long_name = 'Предельно допустимая концентрация вещества в атмосферном воздухе рабочей зоны'
 
@@ -55,14 +40,10 @@ class PDKrz(APIRepresentationMixin, StructBlock):
         label = 'ПДК в воздухе рабочей зоны'
 
 
-class OBUVair(APIRepresentationMixin, StructBlock):
+class OBUVair(SourceStructBlock):
     value = FloatBlock(
         label='Ориентировочно безопасные уровни воздействия в воздухе [мг/м3]',
         required=True, min_value=0)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'ОБУВ (мг/м3)'
     long_name = 'Ориентировочный безопасный уровень воздействия в атмосферном воздухе населенных мест'
 
@@ -71,7 +52,7 @@ class OBUVair(APIRepresentationMixin, StructBlock):
         label = 'ОБУВ в воздухе'
         value_class = PDKairStructValue
 
-class SafetyClassAir(APIRepresentationMixin, StructBlock):
+class SafetyClassAir(SourceStructBlock):
     value = ChoiceBlock(
         label='Класс опасности в воздухе',
         choices=[
@@ -81,10 +62,6 @@ class SafetyClassAir(APIRepresentationMixin, StructBlock):
                 ('4', 'IV класс'),
             ],
         required=True,)
-    source = SnippetChooserBlock(
-        LitSource,
-        label="Источник литературы для значения", 
-        required=True)
     abbr = 'Класс опасности в атмосферном воздухе'
     long_name = 'Класс опасности в атмосферном воздухе' 
 
