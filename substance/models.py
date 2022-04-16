@@ -49,7 +49,7 @@ class Substance(Page):
         ('SafetyClassSoil', soilblocks.SafetyClassSoil()),
         ('PDKp', soilblocks.PDKp()),
         ('ODKp', soilblocks.ODKp()),        
-    ], block_counts={
+    ], max_num=3, block_counts={
             'SafetyClassSoil': {'max_num': 1}, 
             'PDKp': {'max_num': 1},
             'ODKp': {'max_num': 1},
@@ -59,9 +59,8 @@ class Substance(Page):
         ('SafetyClassDrinkWater', dwblocks.SafetyClassDrinkWater()),
         ('PDKw', dwblocks.PDKw()),        
         ('ODUw', dwblocks.ODUw()),
-        ('OBUVw', dwblocks.OBUVw()),
-        
-    ], block_counts={
+        ('OBUVw', dwblocks.OBUVw()),        
+    ], max_num=4, block_counts={
             'SafetyClassDrinkWater': {'max_num': 1}, 
             'PDKw': {'max_num': 1},
             'ODUw': {'max_num': 1},
@@ -71,9 +70,8 @@ class Substance(Page):
     fwprops = StreamField([
         ('SafetyClassFishWater', fwblocks.SafetyClassFishWater()),
         ('PDKfw', fwblocks.PDKfw()),        
-        ('OBUVfw', fwblocks.OBUVfw()),
-        
-    ], block_counts={
+        ('OBUVfw', fwblocks.OBUVfw()),        
+    ], max_num=3, block_counts={
             'SafetyClassFishWater': {'max_num': 1}, 
             'PDKfw': {'max_num': 1},
             'OBUVfw': {'max_num': 1},
@@ -85,7 +83,7 @@ class Substance(Page):
         ('PDKmr', airblocks.PDKmr()),
         ('PDKrz', airblocks.PDKrz()),
         ('OBUVair', airblocks.OBUVair()),        
-    ], block_counts={
+    ], max_num=5, block_counts={
             'SafetyClassAir': {'max_num': 1}, 
             'PDKss': {'max_num': 1},
             'PDKmr': {'max_num': 1},
@@ -95,9 +93,8 @@ class Substance(Page):
 
     ecoprops = StreamField([
         ('Persistancy', ecoblocks.Persistancy()),
-        ('Bioaccum', ecoblocks.Bioaccum()),
-        
-    ], block_counts={
+        ('Bioaccum', ecoblocks.Bioaccum()),        
+    ], max_num=2, block_counts={
             'Persistancy': {'max_num': 1},
             'Bioaccum': {'max_num': 1},
     }, null=True, blank=True)
@@ -105,9 +102,8 @@ class Substance(Page):
     ldprops = StreamField([
         ('LD50', ldblocks.LD50()),
         ('LC50', ldblocks.LC50()),
-        ('LC50water', ldblocks.LC50water()),
-        
-    ], block_counts={
+        ('LC50water', ldblocks.LC50water()),        
+    ], max_num=3, block_counts={
             'LD50': {'max_num': 1},
             'LC50': {'max_num': 1},
             'LC50water': {'max_num': 1},
@@ -116,9 +112,8 @@ class Substance(Page):
     foodprops = StreamField([
         ('PDKpp', foodblocks.PDKpp()),
         ('MDS', foodblocks.MDS()),
-        ('MDU', foodblocks.MDU()),
-        
-    ], block_counts={
+        ('MDU', foodblocks.MDU()),        
+    ], max_num=3, block_counts={
             'PDKpp': {'max_num': 1},
             'MDS': {'max_num': 1},
             'MDU': {'max_num': 1},
@@ -130,7 +125,7 @@ class Substance(Page):
         ('COD', propblocks.COD()),
         ('BOD5', propblocks.BOD5()),
         ('Cnas', propblocks.Cnas()),        
-    ], block_counts={
+    ], max_num=5, block_counts={
             'Kow': {'max_num': 1},
             'Solubility': {'max_num': 1},
             'COD': {'max_num': 1},
@@ -201,7 +196,6 @@ class Substance(Page):
         """
         count = 0        
         all_blocks = self.get_set_props()
-    
         for prop in self.single_props:
             if prop in all_blocks:
                 count += 1
@@ -298,22 +292,19 @@ class Substance(Page):
 
     
     def get_sumBj(self):
-
+        """
+        Общее значение B для всех свойств
+        """
         return self.get_sum_complexBj() + self.get_sum_singleBj() + self.get_sum_multiBj()
         
-
 
     def get_x(self):
         """
         относительный параметр опасности компонента отхода для окружающей среды
         """
         if self.x_value:
-            return self.x_value
-        
+            return self.x_value        
         return (self.get_sumBj() + self.b_inf) / (self.get_prop_count() + 1)
-        
-                
-
     
     def get_z(self):
         """
@@ -325,8 +316,7 @@ class Substance(Page):
         """
         Функция считает логарифм от коэффициента степени опасности компонента
         уточнить логарифм десятичный или какой-то другой
-        """        
-
+        """
         z = self.get_z()
         if 1. <= z <= 2:
             return 4. - 4. / z
@@ -334,17 +324,14 @@ class Substance(Page):
             return z
         elif 4. < z <= 5:
             return 2. + 4. / (6 - z)
-
         return 1
     
     def get_w(self):
         """
         Функция считает коэффициента степени опасности компонента       
         если значение w задано в базе возвращает значение из базы
-        """           
-
-        return 10.**self.get_log_w()
-    
+        """
+        return 10.**self.get_log_w()    
   
     def get_k(self, conc):
         """
@@ -354,10 +341,10 @@ class Substance(Page):
         принимает W=1e6
         в противном случае считает W согласно методике по свойства
         """
-        if self.land_concentration:
-            if conc > self.land_concentration:
-                return conc / self.get_w()
-            return conc/1e6
+        #if self.land_concentration:
+         #   if conc > self.land_concentration:
+          #      return conc / self.get_w()
+           # return conc/1e6
         return conc / self.get_w()
     
     def clean(self, *args, **kwargs):
@@ -370,3 +357,6 @@ class Substance(Page):
                 {'x_value': ['Если задан источник, необходимо задать X',]})
         return super().clean(*args, **kwargs)
         
+    class Meta:
+        verbose_name = 'Компонент'
+        verbose_name_plural = 'Компоненты'
