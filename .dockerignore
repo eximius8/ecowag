@@ -3,6 +3,10 @@
 /static/
 *.sqlite3
 
+# Jupyter Notebook 
+.ipynb_checkpoints 
+notebook.ipynb
+
 # Python and others
 __pycache__
 *.pyc
