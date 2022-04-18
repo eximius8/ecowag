@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'wagtail.api.v2',
     'rest_framework',
+    'corsheaders',
 
     'modelcluster',
     'taggit',
@@ -59,6 +60,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -66,8 +70,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 
+
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 ROOT_URLCONF = 'ecowag.urls'
 
