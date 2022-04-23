@@ -6,12 +6,14 @@ def component_exists(value):
     try:
         Substance.objects.get(pk=value)
     except Substance.DoesNotExist:
-        raise serializers.ValidationError('Не найдено')
+        raise serializers.ValidationError(f'Компонент {value} не найден.')
 
 class CommponSerializer(serializers.Serializer):
     
     id = serializers.IntegerField(min_value=0, validators=[component_exists,])
-    concentration = serializers.FloatField(min_value=0., max_value=100.)
+    concentration = serializers.FloatField(
+        required=True,
+        min_value=0., max_value=100.)
 
 
 class WasteSerializer(serializers.Serializer):

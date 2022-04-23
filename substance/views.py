@@ -59,7 +59,7 @@ def calculate_safety_klass_view(request):
     if data_in_serializer.is_valid():
         for objkt in request.data['components']:
             # Умножаем концентрацию на 1е4 чтобы концентрация была соизмерима
-            data[objkt['id']] = objkt['concentration']*1e4
+            data[objkt['id']] = float(objkt['concentration'])*1e4
         waste = Waste(data)
         resp = {}
         resp['K'] = waste.get_summ_K()
