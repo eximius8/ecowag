@@ -33,6 +33,22 @@ class Waste:
             return "II"
         else:
             return "I"
+    
+    def get_components(self):
+
+        comps = []
+        for component, conc in self.components:
+            comps += [
+                {
+                    "x": component.get_x(),
+                    "z": component.get_z(),
+                    "w": component.get_w(),
+                    "conc": conc,
+                    "k": component.get_k(conc),
+                }
+            ]
+        return comps
+
 
 
 @api_view(['POST',])
@@ -48,6 +64,7 @@ def calculate_safety_klass_view(request):
         resp = {}
         resp['K'] = waste.get_summ_K()
         resp['sclass'] = waste.get_safety_class()
+        resp['components'] = waste.get_components()
         return Response(resp)
     return Response(data_in_serializer.errors)
    
