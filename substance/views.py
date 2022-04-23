@@ -40,6 +40,8 @@ class Waste:
         for component, conc in self.components:
             comps += [
                 {
+                    "name": component.title,
+                    "id": component.id,
                     "x": component.get_x(),
                     "z": component.get_z(),
                     "w": component.get_w(),
