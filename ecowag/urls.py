@@ -16,11 +16,11 @@ urlpatterns = [
 
     path('api/v2/', api_router.urls),
 
-    path('admin/', include(wagtailadmin_urls)),
-    path('documents/', include(wagtaildocs_urls)),
+    path('api/admin/', include(wagtailadmin_urls)),
+    path('api/documents/', include(wagtaildocs_urls)),
 
-    path('search/', search_views.search, name='search'),
-    path('calcsclass/', calculate_safety_klass_view),
+    path('api/search/', search_views.search, name='search'),
+    path('api/calcsclass/', calculate_safety_klass_view),
 
 ]
 
