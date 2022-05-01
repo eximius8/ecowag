@@ -45,7 +45,7 @@ class Waste:
                     "x": component.get_x(),
                     "z": component.get_z(),
                     "w": component.get_w(),
-                    "conc": conc,
+                    "conc": conc / 1e4,
                     "k": component.get_k(conc),
                 }
             ]
