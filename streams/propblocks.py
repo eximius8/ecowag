@@ -1,6 +1,6 @@
-from wagtail.core.blocks import FloatBlock
+from wagtail.blocks import FloatBlock
 from streams.structvalues import SourceStructBlock
-from wagtail.core.blocks import StructValue
+from wagtail.blocks import StructValue
 import math
 
 

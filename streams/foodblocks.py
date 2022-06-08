@@ -1,4 +1,4 @@
-from wagtail.core.blocks import FloatBlock
+from wagtail.blocks import FloatBlock
 from .structvalues import SourceStructBlock, PDKppStructValue
 
 

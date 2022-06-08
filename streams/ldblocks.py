@@ -1,4 +1,4 @@
-from wagtail.core.blocks import FloatBlock
+from wagtail.blocks import FloatBlock
 from streams.structvalues import SourceStructBlock, LC50StructValue, LD50StructValue, LC50wStructValue
 
 

@@ -1,8 +1,7 @@
-from wagtail.core.blocks import StructValue
-from litsource.serializers import LitSourceSerializer
-from wagtail.core.blocks import StructBlock
+from wagtail.blocks import StructBlock, StructValue
 from wagtail.snippets.blocks import SnippetChooserBlock
 from litsource.models import LitSource
+from litsource.serializers import LitSourceSerializer
 
 
 class SourceStructBlock(StructBlock):

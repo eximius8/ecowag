@@ -1,4 +1,4 @@
-from wagtail.core.blocks import FloatBlock, ChoiceBlock
+from wagtail.blocks import FloatBlock, ChoiceBlock
 from streams.structvalues import SourceStructBlock, ClassStructValue, PDKfwStructValue
 
 

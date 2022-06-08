@@ -1,17 +1,16 @@
 import math
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
-from wagtail.core.models import Page
-from wagtail.core.fields import StreamField
+from wagtail.models import Page
+from wagtail.fields import StreamField
 from wagtail.api import APIField
 from django.core.exceptions import ValidationError
 
 from streams import soilblocks, dwblocks, fwblocks, \
     ecoblocks, airblocks, ldblocks, propblocks, foodblocks
 
-from wagtail.admin.edit_handlers import StreamFieldPanel, MultiFieldPanel, \
-    FieldPanel, FieldRowPanel
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from wagtail.admin.panels import MultiFieldPanel, FieldPanel, FieldRowPanel
+
 from streams.structvalues import get_b, get_rev_b
 
 
@@ -139,16 +138,16 @@ class Substance(Page):
         MultiFieldPanel([
             FieldRowPanel(
                 [FieldPanel('x_value'),
-                 SnippetChooserPanel('x_value_lit_source')]),
+                 FieldPanel('x_value_lit_source')]),
         ], heading="Известные параметр X"),
-        StreamFieldPanel('soilprops', heading='Свойства для почвы'),
-        StreamFieldPanel('dwprops', heading='Свойства для питьевой воды'),
-        StreamFieldPanel('fwprops', heading='Свойства для воды рыбохозяйственного значения'),
-        StreamFieldPanel('airprops', heading='Свойства для воздуха'),
-        StreamFieldPanel('ldprops', heading='Летальные свойства'),
-        StreamFieldPanel('foodprops', heading='Содержание в продуктах'),
-        StreamFieldPanel('props', heading='Физические, химические и биологические свойства'),
-        StreamFieldPanel('ecoprops', heading='Поведение в окружающей среде'),
+        FieldPanel('soilprops', heading='Свойства для почвы'),
+        FieldPanel('dwprops', heading='Свойства для питьевой воды'),
+        FieldPanel('fwprops', heading='Свойства для воды рыбохозяйственного значения'),
+        FieldPanel('airprops', heading='Свойства для воздуха'),
+        FieldPanel('ldprops', heading='Летальные свойства'),
+        FieldPanel('foodprops', heading='Содержание в продуктах'),
+        FieldPanel('props', heading='Физические, химические и биологические свойства'),
+        FieldPanel('ecoprops', heading='Поведение в окружающей среде'),
     ]
 
     api_fields = [
