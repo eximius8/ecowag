@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'streams',
     'substance',
     'ecouser',
+    'blog',
 
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
@@ -31,6 +32,7 @@ INSTALLED_APPS = [
     'wagtail.search',
     'wagtail.admin',
     'wagtail',
+    'wagtail_headless_preview',
 
     'wagtail.api.v2',
     'rest_framework',
@@ -118,6 +120,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+WAGTAIL_HEADLESS_PREVIEW = {
+    "CLIENT_URLS": {
+        "default": "http://webecolog.ru",
+    },  # defaults to an empty dict. You must at the very least define the default client URL.
+    "LIVE_PREVIEW": True,  # set to True to enable live preview functionality
+    "SERVE_BASE_URL": "http://webecolog.ru",
+    "REDIRECT_ON_PREVIEW": False,  # set to True to redirect to the preview instead of using the Wagtail default mechanism
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -131,6 +141,8 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+WAGTAIL_ALLOW_UNICODE_SLUGS = False
 
 
 # Static files (CSS, JavaScript, Images)

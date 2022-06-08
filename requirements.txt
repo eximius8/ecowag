@@ -1,4 +1,5 @@
 wagtail>=3.0
 django-extensions
 django-cors-headers
+wagtail-headless-preview
 gunicorn
