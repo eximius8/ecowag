@@ -5,31 +5,41 @@ from wagtail.models import Page
 from wagtail.fields import StreamField
 from wagtail.api import APIField
 from django.core.exceptions import ValidationError
+from wagtail.search import index
+
+from wagtail_headless_preview.models import HeadlessMixin
 
 from streams import soilblocks, dwblocks, fwblocks, \
     ecoblocks, airblocks, ldblocks, propblocks, foodblocks
-
 from wagtail.admin.panels import MultiFieldPanel, FieldPanel, FieldRowPanel
-
 from streams.structvalues import get_b, get_rev_b
 
 
-class Substance(Page):
+class SubstanceIndex(HeadlessMixin, Page):
 
-    x_value = models.FloatField(
-        blank=True, 
-        null=True, 
-        verbose_name="X - относительный параметр опасности компонента отхода " +
-        "для окружающей среды (если известен - указание источника обязательно)",
-        validators=[MinValueValidator(1.0),MaxValueValidator(4.0)])
+    subpage_types = ['substance.SubstanceType']
+    parent_page_types = ['home.HomePage']
+    max_count = 1
 
-    x_value_lit_source = models.ForeignKey('litsource.LitSource',
-                                    blank=True, 
-                                    null=True, 
-                                    on_delete=models.SET_NULL, 
-                                    related_name='x_value', 
-                                    verbose_name='Источник литературы для относительного параметра опаности (если задано числовое значение X, то обязателен)')
-                               
+    class Meta:
+        verbose_name = 'Страница компонентов'
+
+
+class SubstanceType(HeadlessMixin, Page):
+
+    subpage_types = ['substance.Substance']
+    parent_page_types = ['substance.SubstanceIndex']
+
+    class Meta:
+        verbose_name = 'Тип компонентов'
+        verbose_name_plural = 'Типы компонентов'
+
+
+class Substance(HeadlessMixin, Page):
+
+    subpage_types = []
+    parent_page_types = ['substance.SubstanceType']
+
     other_names = models.CharField(
         max_length=1000,
         blank=True, 
@@ -43,6 +53,40 @@ class Substance(Page):
                                           regex=r"\b[1-9]{1}[0-9]{1,6}-\d{2}-\d\b",
                                           message="CAS код для вещества в формате 1111-11-1"),
                                         ])
+    search_fields = Page.search_fields + [ 
+        index.SearchField('other_names'),
+        index.FilterField('cas_number'),
+    ]
+
+    x_value = models.FloatField(
+        blank=True, 
+        null=True, 
+        verbose_name="X - относительный параметр опасности компонента отхода " +
+        "для окружающей среды [мин. 1, макс. 4] (если известен - указание источника обязательно)",
+        validators=[MinValueValidator(1.0),MaxValueValidator(4.0)])
+
+    x_value_lit_source = models.ForeignKey('litsource.LitSource',
+                                    blank=True, 
+                                    null=True, 
+                                    on_delete=models.SET_NULL, 
+                                    related_name='x_value', 
+                                    verbose_name='Источник литературы для относительного параметра опаности'+
+                                    ' (если задано числовое значение X, то обязателен)')
+    soil_conc = models.FloatField(
+            blank=True, 
+            null=True, 
+            verbose_name="Содержание в основных типах почв в %",
+            validators=[MinValueValidator(0.0),MaxValueValidator(100.0)])
+    soil_conc_lit_source = models.ForeignKey('litsource.LitSource',
+                                    blank=True, 
+                                    null=True, 
+                                    on_delete=models.SET_NULL, 
+                                    related_name='soil_conc', 
+                                    verbose_name='Источник литературы для содержания компонента'+
+                                    ' в основных типах почв (если задано cодержание в основных'+
+                                    ' типах почв, то обязателен)')
+
+    
 
     soilprops = StreamField([
         ('SafetyClassSoil', soilblocks.SafetyClassSoil()),
@@ -140,6 +184,11 @@ class Substance(Page):
                 [FieldPanel('x_value'),
                  FieldPanel('x_value_lit_source')]),
         ], heading="Известные параметр X"),
+        MultiFieldPanel([
+            FieldRowPanel(
+                [FieldPanel('soil_conc'),
+                 FieldPanel('soil_conc_lit_source')]),
+        ], heading="Концентрация в почве"),
         FieldPanel('soilprops', heading='Свойства для почвы'),
         FieldPanel('dwprops', heading='Свойства для питьевой воды'),
         FieldPanel('fwprops', heading='Свойства для воды рыбохозяйственного значения'),
@@ -161,7 +210,7 @@ class Substance(Page):
         APIField('ecoprops'),
         APIField('get_x'),
         APIField('get_prop_count'),
-        APIField('b_inf'),        
+        APIField('b_inf'),
     ]
 
     single_props = ['SafetyClassSoil', 'LD50', 'LC50', 'LC50water', 'SafetyClassFishWater', 
@@ -347,6 +396,13 @@ class Substance(Page):
         return conc / self.get_w()
     
     def clean(self, *args, **kwargs):
+
+        if self.soil_conc and not self.soil_conc_lit_source:
+            raise ValidationError(
+                {'soil_conc_lit_source': ['Если задана концентрация в почве необходимо задать источник',]})
+        elif self.soil_conc_lit_source and not self.soil_conc:
+            raise ValidationError(
+                {'soil_conc': ['Если задан источник, необходимо задать концентрацию в почве',]})
 
         if self.x_value and not self.x_value_lit_source:
             raise ValidationError(

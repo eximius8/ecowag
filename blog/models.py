@@ -18,12 +18,12 @@ class BlogPage(HeadlessMixin, Page):
     parent_page_types = ['blog.BlogIndexPage']
     subpage_types = []
 
-    feed_image = models.ForeignKey(
+    img = models.ForeignKey(
         'wagtailimages.Image',
         on_delete=models.SET_NULL,
         related_name='+',
         null=True,
-        blank=True,
+        blank=False,
     )
 
     body = StreamField([        
@@ -34,12 +34,12 @@ class BlogPage(HeadlessMixin, Page):
         blank=True,)
 
     content_panels = Page.content_panels + [
-        FieldPanel('feed_image'),
+        FieldPanel('img'),
         FieldPanel('body'),
     ]
 
     api_fields = [
-        APIField('feed_image'),
-        APIField('feed_image_thumbnail', serializer=ImageRenditionField('fill-100x100', source='feed_image')),
+        APIField('img'),
+        APIField('img_small', serializer=ImageRenditionField('fill-200x100', source='img')),
         APIField('body'),       
     ]

@@ -4,6 +4,8 @@ import os
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -64,9 +66,6 @@ MIDDLEWARE = [
 
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
-CORS_ALLOW_ALL_ORIGINS = True
-
-WAGTAILAPI_LIMIT_MAX = 20
 
 ROOT_URLCONF = 'ecowag.urls'
 
@@ -122,10 +121,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 WAGTAIL_HEADLESS_PREVIEW = {
     "CLIENT_URLS": {
-        "default": "http://webecolog.ru/api",
+        "default": os.getenv('FRONT_URL'),
     },  # defaults to an empty dict. You must at the very least define the default client URL.
     "LIVE_PREVIEW": True,  # set to True to enable live preview functionality
-    "SERVE_BASE_URL": "http://webecolog.ru/api",
+    "SERVE_BASE_URL": os.getenv('FRONT_URL'),
     "REDIRECT_ON_PREVIEW": False,  # set to True to redirect to the preview instead of using the Wagtail default mechanism
 }
 
@@ -184,9 +183,24 @@ WAGTAILSEARCH_BACKENDS = {
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 
-WAGTAILADMIN_BASE_URL = 'http://webecolog.ru/api/'
-WAGTAILAPI_BASE_URL = 'http://webecolog.ru/api/'
+WAGTAILADMIN_BASE_URL = os.getenv('API_URL')
+WAGTAILAPI_BASE_URL = os.getenv('API_URL')
 
 AUTH_USER_MODEL = 'ecouser.EcoUser'
 
 WAGTAILAPI_LIMIT_MAX = 20
+WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = True
+WAGTAIL_PASSWORD_RESET_ENABLED = True
+WAGTAIL_EMAIL_MANAGEMENT_ENABLED = False
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+WAGTAILADMIN_NOTIFICATION_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
+EMAIL_USE_SSL = True
+WAGTAILADMIN_NOTIFICATION_USE_HTML = True
