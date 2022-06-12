@@ -122,10 +122,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 WAGTAIL_HEADLESS_PREVIEW = {
     "CLIENT_URLS": {
-        "default": "http://webecolog.ru",
+        "default": "http://webecolog.ru/api",
     },  # defaults to an empty dict. You must at the very least define the default client URL.
     "LIVE_PREVIEW": True,  # set to True to enable live preview functionality
-    "SERVE_BASE_URL": "http://webecolog.ru",
+    "SERVE_BASE_URL": "http://webecolog.ru/api",
     "REDIRECT_ON_PREVIEW": False,  # set to True to redirect to the preview instead of using the Wagtail default mechanism
 }
 
@@ -184,6 +184,9 @@ WAGTAILSEARCH_BACKENDS = {
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 
-WAGTAILADMIN_BASE_URL = 'http://webecolog.ru'
+WAGTAILADMIN_BASE_URL = 'http://webecolog.ru/api/'
+WAGTAILAPI_BASE_URL = 'http://webecolog.ru/api/'
 
 AUTH_USER_MODEL = 'ecouser.EcoUser'
+
+WAGTAILAPI_LIMIT_MAX = 20
