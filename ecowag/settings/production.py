@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://webecolog.ru",
@@ -11,10 +11,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
 ]
 
-ALLOWED_HOSTS = ['api.webecolog.ru'] 
+ALLOWED_HOSTS = ['.api.webecolog.ru'] 
+CSRF_TRUSTED_ORIGINS = ['https://*.webecolog.ru'] 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+#SECURE_SSL_REDIRECT = True
 SECURE_HSTS_SECONDS = 60
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
