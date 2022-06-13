@@ -164,12 +164,15 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesSto
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')# '/opt/static/'  #os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media') #os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+REPORTS_ROOT = f'{MEDIA_ROOT}/reports/'
+if not os.path.exists(REPORTS_ROOT):
+    os.makedirs(REPORTS_ROOT)
 
 
 # Wagtail settings
-
 WAGTAIL_SITE_NAME = "ecowag"
 
 # Search
@@ -193,6 +196,7 @@ WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = True
 WAGTAIL_PASSWORD_RESET_ENABLED = True
 WAGTAIL_EMAIL_MANAGEMENT_ENABLED = False
 
+# Email settings
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 

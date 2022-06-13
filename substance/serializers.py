@@ -19,8 +19,6 @@ class CommponSerializer(serializers.Serializer):
 class WasteSerializer(serializers.Serializer):
 
     components = CommponSerializer(required=True, many=True)
-    # name = serializers.CharField(max_length=200)
-    # fkko = serializers.CharField(max_length=30)
 
     def validate_components(self, comps):        
         sum_conc = 0
@@ -28,3 +26,8 @@ class WasteSerializer(serializers.Serializer):
             sum_conc += float(component['concentration'])
         if sum_conc > 100:
             raise serializers.ValidationError("Сумма всех концентраций не может быть больше 100!")
+
+class ReportWasteSerializer(WasteSerializer):
+
+    name = serializers.CharField(max_length=200)
+    fkko = serializers.CharField(max_length=30, required=False, allow_null=True, default=None)

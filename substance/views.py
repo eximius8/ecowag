@@ -1,8 +1,11 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from substance.serializers import WasteSerializer
+from substance.serializers import WasteSerializer, ReportWasteSerializer
 from substance.models import Substance
+from substance.wastereport.wastereport import WasteReport
+import uuid
+from django.conf import settings
 
 
 class Waste:
@@ -51,6 +54,32 @@ class Waste:
             ]
         return comps
 
+
+@api_view(['POST',])
+def create_report(request):
+    cleanedser = ReportWasteSerializer(data=request.data)
+    if cleanedser.is_valid():
+        cleaned = cleanedser.data
+        components = {}
+        for objkt in request.data['components']:
+            # Умножаем концентрацию на 1е4 чтобы концентрация была соизмерима
+            components[objkt['id']] = float(objkt['concentration'])*1e4
+        waste = Waste(components)
+        report = WasteReport(
+            name=cleaned['name'], 
+            fkko=cleaned['fkko'],
+            k=waste.get_summ_K(), 
+            safety_class=waste.get_safety_class(), 
+            components=components)
+        report.create_preamble()
+        report.fill_document()        
+        filename = f'{settings.REPORTS_ROOT}/{str(uuid.uuid1())}'
+        report.generate_tex(filename)
+        with open(f'{filename}.tex', "r") as f:
+            data = f.read()
+        return Response({'file': data})
+
+    return Response(cleanedser.errors)
 
 
 @api_view(['POST',])

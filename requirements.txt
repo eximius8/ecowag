@@ -3,3 +3,5 @@ django-extensions
 django-cors-headers
 wagtail-headless-preview
 gunicorn
+# for latex
+pylatex

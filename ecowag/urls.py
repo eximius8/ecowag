@@ -5,7 +5,7 @@ from django.contrib import admin
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
-from substance.views import calculate_safety_klass_view
+from substance.views import calculate_safety_klass_view, create_report
 
 from .api import api_router
 
@@ -21,6 +21,7 @@ urlpatterns = [
 
     path('search/', search_views.search, name='search'),
     path('calcsclass/', calculate_safety_klass_view),
+    path('report/', create_report),
 
 ]
 
