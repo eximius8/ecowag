@@ -75,7 +75,8 @@ def create_report(request):
         report.fill_document()        
         filename = str(uuid.uuid1())
         report.generate_tex(f'{settings.REPORTS_ROOT}/{filename}')
-        return Response({'file': f'{settings.MEDIA_URL}reports/{filename}.tex'})
+        report.generate_pdf(f'{settings.REPORTS_ROOT}/{filename}')
+        return Response({'file': f'{settings.MEDIA_URL}reports/{filename}.pdf'})
 
     return Response(cleanedser.errors)
 
