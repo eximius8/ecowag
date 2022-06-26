@@ -200,7 +200,7 @@ class WasteReport(Document):
             data_table.add_row((
                 "Показатель информационного обеспечения",  
                 MultiColumn(3, align='l|', 
-                data=Math(data=f"Binf={component.b_inf()}", 
+                data=Math(data=f"Binf={component.b_inf}", 
                 inline=True))))
             data_table.add_hline()
         self.append(Command("normalsize"))        

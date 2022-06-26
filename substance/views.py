@@ -73,11 +73,10 @@ def create_report(request):
             components=components)
         report.create_preamble()
         report.fill_document()        
-        filename = f'{settings.REPORTS_ROOT}/{str(uuid.uuid1())}'
-        report.generate_tex(filename)
-        with open(f'{filename}.tex', "r") as f:
-            data = f.read()
-        return Response({'file': data})
+        filename = str(uuid.uuid1())
+        report.generate_tex(f'{settings.REPORTS_ROOT}/{filename}')
+        report.generate_pdf(f'{settings.REPORTS_ROOT}/{filename}')
+        return Response({'file': f'{settings.MEDIA_URL}reports/{filename}.pdf'})
 
     return Response(cleanedser.errors)
 
