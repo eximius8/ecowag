@@ -33,7 +33,7 @@ class WasteReport(Document):
         #has_soil_components = False  
         
 
-        with self.create(Tabu(r"|X[2.2]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|", to=r"\textwidth", width=8)) as data_table:
+        with self.create(Tabu(r"|X[2.2]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|", to=r"\textwidth", width=8)) as data_table:
             data_table.add_hline()            
             data_table.add_row(["Компонент",
                                 "Сод., \%",
@@ -42,7 +42,8 @@ class WasteReport(Document):
                                 "$Z_i$",
                                 "$\lg W_i$",
                                 "$W_i$, мг/кг",
-                                "$K_i$"], 
+                                "$K_i$",
+                                "Источник"], 
                                 #mapper=bold,
                                 color="gray", escape=False)
             data_table.add_hline()
@@ -60,7 +61,8 @@ class WasteReport(Document):
                                     "%.2f" % component.get_z(), 
                                     "%.2f" % component.get_log_w(), 
                                     "%.0f" % component.get_w(), 
-                                    "%.1f" % component.get_k(conc)])              
+                                    "%.1f" % component.get_k(conc),
+                                    "[1]"])              
                 
                 total_concp += conc/1e4      
                 data_table.add_hline()                
@@ -70,7 +72,7 @@ class WasteReport(Document):
             data_table.add_hline()    
             data_table.add_row([MultiColumn(7, align='|r|', data='Показатель К степени опасности отхода:'), "%.1f" % self.k])
             data_table.add_hline()
-            data_table.add_row(( MultiColumn(7, align='|r|', data='Класс опасности отхода:'), self.safety_class))
+            data_table.add_row((MultiColumn(7, align='|r|', data='Класс опасности отхода:'), self.safety_class))
             data_table.add_hline()
 
         if has_known_components:
