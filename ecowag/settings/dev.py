@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from .base import *
 
+# pip install python-dotenv
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
