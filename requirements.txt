@@ -5,3 +5,5 @@ wagtail-headless-preview
 gunicorn
 # for latex
 pylatex
+pybtex
+num2words

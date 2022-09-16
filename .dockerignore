@@ -41,5 +41,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+*.md
 
 .env

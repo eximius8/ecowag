@@ -96,7 +96,7 @@ class Substance(HeadlessMixin, Page):
             'SafetyClassSoil': {'max_num': 1}, 
             'PDKp': {'max_num': 1},
             'ODKp': {'max_num': 1},
-    }, null=True, blank=True)
+    }, null=True, blank=True, use_json_field=True)
 
     dwprops = StreamField([
         ('SafetyClassDrinkWater', dwblocks.SafetyClassDrinkWater()),
@@ -108,7 +108,7 @@ class Substance(HeadlessMixin, Page):
             'PDKw': {'max_num': 1},
             'ODUw': {'max_num': 1},
             'OBUVw': {'max_num': 1},
-    }, null=True, blank=True)
+    }, null=True, blank=True, use_json_field=True)
 
     fwprops = StreamField([
         ('SafetyClassFishWater', fwblocks.SafetyClassFishWater()),
@@ -118,7 +118,7 @@ class Substance(HeadlessMixin, Page):
             'SafetyClassFishWater': {'max_num': 1}, 
             'PDKfw': {'max_num': 1},
             'OBUVfw': {'max_num': 1},
-    }, null=True, blank=True)
+    }, null=True, blank=True, use_json_field=True)
 
     airprops = StreamField([
         ('SafetyClassAir', airblocks.SafetyClassAir()),
@@ -132,7 +132,7 @@ class Substance(HeadlessMixin, Page):
             'PDKmr': {'max_num': 1},
             'PDKrz': {'max_num': 1},
             'OBUVair': {'max_num': 1},
-    }, null=True, blank=True)
+    }, null=True, blank=True, use_json_field=True)
 
     ecoprops = StreamField([
         ('Persistancy', ecoblocks.Persistancy()),
@@ -140,7 +140,7 @@ class Substance(HeadlessMixin, Page):
     ], max_num=2, block_counts={
             'Persistancy': {'max_num': 1},
             'Bioaccum': {'max_num': 1},
-    }, null=True, blank=True)
+    }, null=True, blank=True, use_json_field=True)
 
     ldprops = StreamField([
         ('LD50', ldblocks.LD50()),
@@ -150,7 +150,7 @@ class Substance(HeadlessMixin, Page):
             'LD50': {'max_num': 1},
             'LC50': {'max_num': 1},
             'LC50water': {'max_num': 1},
-    }, null=True, blank=True)
+    }, null=True, blank=True, use_json_field=True)
 
     foodprops = StreamField([
         ('PDKpp', foodblocks.PDKpp()),
@@ -160,7 +160,7 @@ class Substance(HeadlessMixin, Page):
             'PDKpp': {'max_num': 1},
             'MDS': {'max_num': 1},
             'MDU': {'max_num': 1},
-    }, null=True, blank=True)
+    }, null=True, blank=True, use_json_field=True)
 
     props = StreamField([
         ('Kow', propblocks.Kow()),
@@ -174,7 +174,7 @@ class Substance(HeadlessMixin, Page):
             'COD': {'max_num': 1},
             'BOD5': {'max_num': 1},
             'Cnas': {'max_num': 1},
-    }, null=True, blank=True)
+    }, null=True, blank=True, use_json_field=True)
 
     content_panels = Page.content_panels + [  
         FieldPanel('cas_number'),

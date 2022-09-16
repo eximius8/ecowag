@@ -23,4 +23,5 @@ except ImportError:
     pass
 
 INSTALLED_APPS += ['django_extensions']
+WAGTAILADMIN_BASE_URL = 'http://localhost:8000'
 
