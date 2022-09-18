@@ -1,17 +1,9 @@
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'home',
@@ -90,19 +82,26 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ecowag.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+#}
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('SERVICE_DB_NAME', ''),
+        'USER': os.environ.get('SERVICE_DB_USER', ''),
+        'PASSWORD': os.environ.get('SERVICE_DB_PASS', ''),
+        'HOST': os.environ.get('SERVICE_DB_HOST', '10.100.8.35'),
+        'PORT': os.environ.get('SERVICE_DB_PORT', '5432'),
+        'OPTIONS': {
+            'options': f'-c search_path={os.environ.get("SERVICE_SCHEME_NAME", "public")}'
+        }
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -128,12 +127,9 @@ WAGTAIL_HEADLESS_PREVIEW = {
     "REDIRECT_ON_PREVIEW": False,  # set to True to redirect to the preview instead of using the Wagtail default mechanism
 }
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.0/topics/i18n/
-
 LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 

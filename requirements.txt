@@ -1,6 +1,7 @@
 wagtail>=3.0
 django-extensions
 django-cors-headers
+psycopg2-binary
 wagtail-headless-preview
 gunicorn
 # for latex
