@@ -15,26 +15,6 @@ from wagtail.admin.panels import MultiFieldPanel, FieldPanel, FieldRowPanel
 from streams.structvalues import get_b, get_rev_b
 
 
-class SubstanceIndex(HeadlessMixin, Page):
-
-    subpage_types = ['substance.SubstanceType']
-    parent_page_types = ['home.HomePage']
-    max_count = 1
-
-    class Meta:
-        verbose_name = 'Страница компонентов'
-
-
-class SubstanceType(HeadlessMixin, Page):
-
-    subpage_types = ['substance.Substance']
-    parent_page_types = ['substance.SubstanceIndex']
-
-    class Meta:
-        verbose_name = 'Тип компонентов'
-        verbose_name_plural = 'Типы компонентов'
-
-
 class Substance(HeadlessMixin, Page):
 
     subpage_types = []

@@ -13,6 +13,10 @@ class BlogIndexPage(HeadlessMixin, Page):
     parent_page_types = ['home.HomePage']
     max_count = 1
 
+    class Meta:
+        verbose_name = 'Страница новостей'
+        verbose_name_plural = 'Страницы новостей'
+
 
 class BlogPage(HeadlessMixin, Page):
     parent_page_types = ['blog.BlogIndexPage']
@@ -43,3 +47,7 @@ class BlogPage(HeadlessMixin, Page):
         APIField('img_small', serializer=ImageRenditionField('fill-200x100', source='img')),
         APIField('body'),       
     ]
+
+    class Meta:
+        verbose_name = 'Новость'
+        verbose_name_plural = 'Новости'
