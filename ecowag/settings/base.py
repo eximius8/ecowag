@@ -186,8 +186,8 @@ WAGTAILSEARCH_BACKENDS = {
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 
-WAGTAILADMIN_BASE_URL = os.getenv('API_URL')
-WAGTAILAPI_BASE_URL = os.getenv('API_URL')
+WAGTAILADMIN_BASE_URL = os.getenv('API_URL', 'localhost:8000')
+WAGTAILAPI_BASE_URL = os.getenv('API_URL', 'localhost:8000')
 
 AUTH_USER_MODEL = 'ecouser.EcoUser'
 

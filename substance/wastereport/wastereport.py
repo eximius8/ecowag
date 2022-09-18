@@ -1,7 +1,7 @@
 from pylatex import Document, Section, MiniPage, Command, Package, MultiColumn, Section
 from pylatex.table import Tabu
 from substance.models import Substance
-
+import os
 from pylatex.utils import bold, NoEscape
 from pylatex.basic import LineBreak
 from pylatex.math import Math
@@ -33,7 +33,7 @@ class WasteReport(Document):
         #has_soil_components = False  
         
 
-        with self.create(Tabu(r"|X[2.2]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|", to=r"\textwidth", width=8)) as data_table:
+        with self.create(Tabu(r"|X[2.2]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|X[c]|", to=r"\textwidth", width=8)) as data_table:
             data_table.add_hline()            
             data_table.add_row(["Компонент",
                                 "Сод., \%",
@@ -42,9 +42,7 @@ class WasteReport(Document):
                                 "$Z_i$",
                                 "$\lg W_i$",
                                 "$W_i$, мг/кг",
-                                "$K_i$",
-                                "Источник"], 
-                                #mapper=bold,
+                                "$K_i$"],
                                 color="gray", escape=False)
             data_table.add_hline()
             for id, conc in self.components.items():
@@ -61,22 +59,21 @@ class WasteReport(Document):
                                     "%.2f" % component.get_z(), 
                                     "%.2f" % component.get_log_w(), 
                                     "%.0f" % component.get_w(), 
-                                    "%.1f" % component.get_k(conc),
-                                    "[1]"])              
-                
+                                    "%.1f" % component.get_k(conc)])                
                 total_concp += conc/1e4      
                 data_table.add_hline()                
 
             
             data_table.add_row(( "Компонентов учтено", "%.0f" % total_concp + " %", MultiColumn(6, align='r|', data='')))
             data_table.add_hline()    
-            data_table.add_row([MultiColumn(7, align='|r|', data='Показатель К степени опасности отхода:'), "%.1f" % self.k])
+            data_table.add_row([MultiColumn(7, align='|r|', data='Показатель K степени опасности отхода:'), "%.1f" % self.k])
             data_table.add_hline()
             data_table.add_row((MultiColumn(7, align='|r|', data='Класс опасности отхода:'), self.safety_class))
             data_table.add_hline()
 
         if has_known_components:
-           self.append(NoEscape(r"\footnotetext[1]{Данные приведены согласно приказу Министерства природных ресурсов и экологии РФ от 4 декабря 2014 г. N 536}"))
+           with open(f'{os.path.dirname(os.path.abspath(__file__))}/templates/footnote.tex', 'r') as f:
+            self.append(NoEscape(f.read()))
      #   if has_soil_components:
     #        self.append(NoEscape(r"\footnotetext[2]{Концентрация не превышает содержание в основных типах почв, принято W=10\textsuperscript{6} (МПР 536)}"))
 
@@ -95,70 +92,14 @@ class WasteReport(Document):
             self.create_head("Код ФККО:", self.fkko)
             self.append(Command("bigskip"))
             self.append(LineBreak())
-        self.append("Расчет класса опасности отхода выполнен в соответствии с \
-        <<Критериями отнесения отходов к I-V классам опасности по степени негативного воздействия на окружающую среду>>, \
-        утвержденными приказом МПР России от 04 декабря 2014 г. № 536.")
-
-        self.append(Command("bigskip"))
-        self.append(Command("noindent"))
-
-        self.create_comp_table()        
         
+        with open(f'{os.path.dirname(os.path.abspath(__file__))}/templates/safety.tex', 'r') as f:
+            self.append(NoEscape(f.read()))
 
-        self.append("Показатель ")
-        self.append(Math(data="K", inline=True))
-        self.append(" степени опасности отхода для окружающей среды рассчитывается по следующей формуле:")
-        self.append(Math(data="K=K_1+K_2+\dots +K_n,", escape=False))
-        self.append("где ")
-        self.append(Math(data="K_1, K_2, \ldots, K_n", inline=True, escape=False))
-        self.append(NoEscape(" --- показатели степени опасности отдельных компонентов отхода для окружающей среды, "))
-        
-        self.append(Math(data="n", inline=True))
-        self.append(NoEscape(" --- количество компонентов отхода."))
-        self.append(LineBreak())
-        self.append("Отнесение отходов к классу опасности расчетным методом по показателю\
-         степени опасности отхода для окружающей среды осуществляется в соответствии с таблицей:")
+        self.create_comp_table()   
 
-        self.append(LineBreak())
-        self.append(Command("bigskip"))
-        self.append(LineBreak())
-        self.append(Command("noindent"))
-
-        with self.create(Tabu(r"|X[c]|X[c]|", to=r"\textwidth", width=2)) as data_table:
-            data_table.add_hline()            
-            data_table.add_row(["Класс опасности отхода",
-                                "Степень опасности 	отхода для окружающей среды"], 
-                                mapper=bold,
-                                color="lightgray")
-            data_table.add_hline()
-            data_table.add_row(["I", "$10^4 \leq  K < 10^6 $"], escape=False)
-            data_table.add_hline()
-            data_table.add_row(["II", "$10^3 \leq  K < 10^4 $"], escape=False)
-            data_table.add_hline()
-            data_table.add_row(["III", "$10^2 \leq   K  < 10^3 $"], escape=False)
-            data_table.add_hline()
-            data_table.add_row(["IV", "$10 < K < 10^2 $"], escape=False)
-            data_table.add_hline()
-
-
-            data_table.add_row(["V", "$K \leq 10 $"], escape=False)
-            data_table.add_hline()
-        self.append(Command("bigskip"))
-        self.append(LineBreak())
-
-        self.append(NoEscape(r"""Степень опасности компонента отхода для окружающей среды $K_i$
-        рассчитывается как отношение концентрации компонента отхода $C_i$ к коэффициенту его степени опасности для окружающей среды $W_i$:
-        $$K_i = \frac{C_i}{W_i},$$
-        где	$C_i$ --- концентрация $i$--тогo компонента в отходе [мг/кг]; 
-         $W_i$ --- коэффициент степени опасности $i$-того компонента отхода для окружающей среды, [мг/кг].
-        """)) 
-        
-        self.append(LineBreak())
-        self.append("""Для определения коэффициента степени опасности компонента отхода \
-         для окружающей среды по каждому компоненту отхода устанавливаются степени их \
-         опасности для окружающей среды для различных компонентов природной среды.""")
-        self.append(LineBreak())
-
+        with open(f'{os.path.dirname(os.path.abspath(__file__))}/templates/method.tex', 'r') as f:
+            self.append(NoEscape(f.read()))
 
         for id in self.components.keys():
             component = Substance.objects.get(pk=id)          
@@ -168,11 +109,11 @@ class WasteReport(Document):
         #self.create_bibliography()
 
         self.append(Command("bigskip"))
-        self.print_shortcuts()         
-
+        with open(f'{os.path.dirname(os.path.abspath(__file__))}/templates/shorthands.tex', 'r') as f:
+            self.append(NoEscape(f.read()))
     
     def print_component_data(self, component):
-        self.append(LineBreak())
+        
         self.append(f'Первичные показатели опасности компонента: {component.title}')
         self.append(LineBreak())
         self.append(LineBreak())
@@ -215,35 +156,6 @@ class WasteReport(Document):
                     environment.append(NoEscape(latexp))
                     #self.append(LineBreak())   
     
-
-    def print_shortcuts(self):
-        """
-        Печать сокращений
-        """
-        self.append(Section(title="Перечень сокращений"))
-        sokrashen = {"ПДКп, мг/кг": "Предельно допустимая концентрация вещества в почве",
-                     "ОДК, мг/кг": "Ориентировочно допустимая концентрация",
-                     "ПДКв, мг/л": "Предельно допустимая концентрация вещества в воде водных объектов, используемых для целей питьевого и хозяйственно-бытового водоснабжения",
-                     "ОДУ, мг/л": "Ориентировочно допустимый уровень",
-                     "ОБУВ, мг/л": "Ориентировочный безопасный уровень воздействия",
-                     "ПДКр.х., мг/л": "Предельно допустимая концентрация вещества в воде водных объектов рыбохозяйственного значения",
-                     r"ПДКс.с., мг/м\textsuperscript{3}": "Предельно допустимая концентрация вещества среднесуточная в атмосферном воздухе населенных мест",
-                     "ПДКп.п.": "Предельно допустимая концентрация вещества в пищевых продуктах",
-                     r"ПДКм.р., мг/м\textsuperscript{3}": "Предельно допустимая концентрация вещества максимально разовая в атмосферном воздухе населенных мест",
-                     r"ПДКр.з., мг/м\textsuperscript{3}": "Предельно допустимая концентрация вещества в атмосферном воздухе рабочей зоны",
-                     "МДС, мг/кг": "Максимально допустимое содержание",
-                     "МДУ, мг/кг": "Максимально допустимый уровень",
-                     r"$S$, мг/л": "Растворимость компонента отхода (вещества) в воде при 20°С",
-                     r"С\textsubscript{нас}": "Насыщающая концентрация вещества в воздухе при 20°С и нормальном давлени",
-                     r"$K_{ow}$": "Коэффициент распределения в системе октанол/вода при 20°С",
-                     r"LD\textsubscript{50}": "Средняя смертельная доза компонента в миллиграммах действующего вещества на 1 кг живого веса, вызывающая гибель 50% подопытных животных при однократном пероральном введении в унифицированных условиях",
-        }
-        with self.create(Tabu(r"|X[c]|X[2]|", to=r"\textwidth", width=2)) as data_table:
-            data_table.add_hline()
-            for name, data in sokrashen.items():
-                data_table.add_row(NoEscape(name), data)             
-                data_table.add_hline()
-
     def create_preamble(self):
 
         # packages

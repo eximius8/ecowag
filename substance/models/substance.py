@@ -6,9 +6,7 @@ from wagtail.fields import StreamField
 from wagtail.api import APIField
 from django.core.exceptions import ValidationError
 from wagtail.search import index
-
 from wagtail_headless_preview.models import HeadlessMixin
-
 from streams import soilblocks, dwblocks, fwblocks, \
     ecoblocks, airblocks, ldblocks, propblocks, foodblocks
 from wagtail.admin.panels import MultiFieldPanel, FieldPanel, FieldRowPanel
@@ -217,7 +215,6 @@ class Substance(HeadlessMixin, Page):
                 stream_dict[prop.block_type] = prop.value["value"]
         return stream_dict
 
-
     def get_prop_count(self):
         """
         Число свойств, учитываемых в расчете 
@@ -317,14 +314,12 @@ class Substance(HeadlessMixin, Page):
             sumbj += get_rev_b(lgcpdkss, 7., 3.9, 1.6)
 
         return sumbj
-
     
     def get_sumBj(self):
         """
         Общее значение B для всех свойств
         """
         return self.get_sum_complexBj() + self.get_sum_singleBj() + self.get_sum_multiBj()
-        
 
     def get_x(self):
         """
